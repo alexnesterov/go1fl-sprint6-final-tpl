@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/config"
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/handlers"
 )
 
@@ -13,14 +14,14 @@ type Server struct {
 	Server *http.Server
 }
 
-func New(logger *log.Logger) *Server {
+func New(cfg *config.Config, logger *log.Logger) *Server {
 	router := http.NewServeMux()
 
 	router.HandleFunc("GET /", handlers.Root)
 	router.HandleFunc("POST /upload", handlers.Upload)
 
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + cfg.Port,
 		Handler:      router,
 		ErrorLog:     logger,
 		ReadTimeout:  5 * time.Second,

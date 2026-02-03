@@ -20,7 +20,11 @@ func Root(w http.ResponseWriter, r *http.Request) {
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(10 << 20)
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
@@ -48,6 +52,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dst.Close()
 
-	dst.Write([]byte(result))
+	_, err = dst.Write([]byte(result))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(result))
 }
